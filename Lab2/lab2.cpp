@@ -153,18 +153,18 @@ void the_mainest() {
 
 		__asm {
 			finit
-			//Вычисляем Y(x)
+			//Г‚Г»Г·ГЁГ±Г«ГїГҐГ¬ Y(x)
 			fld two					//st(0) = 2
 			fld x					//st(0) = x, st(1) = 2
 			fabs
 			fyl2x					//st(0) = 2log2x
 			fld st					//st(0) = 2log2x, st(1) = 2log2x
 			frndint					//st(0) = round(2log2x), st(1) = 2log2x
-			fsub st(1), st			//st(0) = целая, st(1) = дробная
-			fxch					//st(0) = дробная, st(1) = целая
-			F2XM1					//st(0) = 2^дробная - 1, st(1) = целая
+			fsub st(1), st			//st(0) = Г¶ГҐГ«Г Гї, st(1) = Г¤Г°Г®ГЎГ­Г Гї
+			fxch					//st(0) = Г¤Г°Г®ГЎГ­Г Гї, st(1) = Г¶ГҐГ«Г Гї
+			F2XM1					//st(0) = 2^Г¤Г°Г®ГЎГ­Г Гї - 1, st(1) = Г¶ГҐГ«Г Гї
 			fld1					
-			faddp st(1), st			//st(0) = 2^дробная, st(1) = целая
+			faddp st(1), st			//st(0) = 2^Г¤Г°Г®ГЎГ­Г Гї, st(1) = Г¶ГҐГ«Г Гї
 			fscale					//st(0) = x^2
 			fld st					//st(0) = x^2, st(1) = x^2
 			fld two					//st(0) = 2, st(1) = x^2, st(2) = x^2
@@ -177,18 +177,18 @@ void the_mainest() {
 			fmulp st(1), st			//st(0) = x^2*log2e, st(1) = 1+2*x^2
 			fld st					//st(0) = x^2*log2e, st(1) = x^2*log2e, st(2) = 1+2*x^2
 			frndint
-			fsub st(1), st			//st(0) = целая, st(1) = дробная, st(2) = 1+2*x^2
+			fsub st(1), st			//st(0) = Г¶ГҐГ«Г Гї, st(1) = Г¤Г°Г®ГЎГ­Г Гї, st(2) = 1+2*x^2
 			fxch
-			F2XM1					//st(0) = 2^дробная - 1, st(1) = целая, st(2) = 1+2*x^2
+			F2XM1					//st(0) = 2^Г¤Г°Г®ГЎГ­Г Гї - 1, st(1) = Г¶ГҐГ«Г Гї, st(2) = 1+2*x^2
 			fld1
-			faddp st(1), st			//st(0) = 2^дробная, st(1) = целая, st(2) = 1+2*x^2
+			faddp st(1), st			//st(0) = 2^Г¤Г°Г®ГЎГ­Г Гї, st(1) = Г¶ГҐГ«Г Гї, st(2) = 1+2*x^2
 			fscale					//st(0) = e^(x^2), st(1) = 0, st(2) = 1+2*x^2
 			fxch
 			fxch st(2)				//st(0) = 1+2*x^2, st(2) = e^(x^2)
 			fmulp st(1), st			//st(0) = Y
 			fstp Y
 
-			//Вычисляем S(x) и n
+			//Г‚Г»Г·ГЁГ±Г«ГїГҐГ¬ S(x) ГЁ n
 			finit
 			fld cycle_sum			//st(0) = 0
 			fld k					//st(0) = k, st(1) = 0
@@ -248,11 +248,11 @@ void the_mainest() {
 				fyl2x				//st(0) = 2klog2x ...
 				fld st
 				frndint				//st(0) = round(2klog2x), st(1) = 2klog2x, ...
-				fsub st(1), st		//st(0) = целая, st(1) = дробная, ...
-				fxch				//st(0) = дробная, st(1) = целая, ...
-				F2XM1				//st(0) = 2^дробная - 1, st(1) = целая, ...
+				fsub st(1), st		//st(0) = Г¶ГҐГ«Г Гї, st(1) = Г¤Г°Г®ГЎГ­Г Гї, ...
+				fxch				//st(0) = Г¤Г°Г®ГЎГ­Г Гї, st(1) = Г¶ГҐГ«Г Гї, ...
+				F2XM1				//st(0) = 2^Г¤Г°Г®ГЎГ­Г Гї - 1, st(1) = Г¶ГҐГ«Г Гї, ...
 				fld1					
-				faddp st(1), st		//st(0) = 2^дробная, st(1) = целая, ...
+				faddp st(1), st		//st(0) = 2^Г¤Г°Г®ГЎГ­Г Гї, st(1) = Г¶ГҐГ«Г Гї, ...
 				fscale				//st(0) = x^2k, st(1) = k, st(2) = (2k + 1)/k!, st(3) = 0
 				fxch
 				fstp temp
