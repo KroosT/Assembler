@@ -68,24 +68,24 @@ int main()
 		if (!flag) {
 			__asm
 			{
-				xor ecx, ecx
-				main_loop :
+			xor ecx, ecx
+			main_loop :
 				movlps xmm0, a[TYPE a * ecx]		//xmm0 = a[ecx, ecx+1]
-					cvtps2pd xmm0, xmm0					//xmm0 = double()
-					movlps xmm1, b[TYPE b * ecx]		//xmm1 = b[ecx, ecx+1]
-					cvtps2pd xmm1, xmm1					//xmm1 = double()
-					addpd xmm0, xmm1					//xmm0 = a+b[ecx, ecx+1]
-					movlps xmm1, c[TYPE c * ecx]		//xmm1 = c[ecx, ecx+1]
-					cvtps2pd xmm1, xmm1					//xmm1 = double()
-					mulpd xmm0, xmm1					//xmm0 = (a+b) * c [ecx, ecx + 1]
-					movups xmm1, d[TYPE d * ecx]		//xmm1 = d[ecx, ecx+1]
-					mulpd xmm0, xmm1					//xmm0 = (a+b)*c*d[ecx, ecx+1]
-					movaps f[TYPE f * ecx], xmm0
-					cmp ecx, 6
-					jae finish
-					add ecx, 2
-					jmp main_loop
-					finish :
+				cvtps2pd xmm0, xmm0					//xmm0 = double()
+				movlps xmm1, b[TYPE b * ecx]		//xmm1 = b[ecx, ecx+1]
+				cvtps2pd xmm1, xmm1					//xmm1 = double()
+				addpd xmm0, xmm1					//xmm0 = a+b[ecx, ecx+1]
+				movlps xmm1, c[TYPE c * ecx]		//xmm1 = c[ecx, ecx+1]
+				cvtps2pd xmm1, xmm1					//xmm1 = double()
+				mulpd xmm0, xmm1					//xmm0 = (a+b) * c [ecx, ecx + 1]
+				movups xmm1, d[TYPE d * ecx]		//xmm1 = d[ecx, ecx+1]
+				mulpd xmm0, xmm1					//xmm0 = (a+b)*c*d[ecx, ecx+1]
+				movaps f[TYPE f * ecx], xmm0
+				cmp ecx, 6
+				jae finish
+				add ecx, 2
+				jmp main_loop
+				finish :
 			}
 			bool flag = false;
 			for (int i = 0; i < 8; i++) {
