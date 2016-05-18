@@ -12,9 +12,9 @@ int main()
 
 	while ((retry == 'y') || (retry == 'Y')) {
 
-		__declspec(align(16)) float a[8] = { -1.0, -10.0, 323.555, 2.0, 1.0, 10.0, -10000000000000000000000000000000000000000.5, -3.1255 };
+		__declspec(align(16)) float a[8] = { -1.0, -10.0, 323.555, 2.0, 1.0, 10.0, 999.5, -3.1255 };
 		__declspec(align(16)) float b[8] = { -1.0, -1.125, 1.0, 5.5, 1.0, 1.0, 60.2, -4.0 };
-		__declspec(align(16)) float c[8] = { -1.0, 1.5, 1.0, 10.5, 1.0, 1.0, 1.0, 1.0 };
+		__declspec(align(16)) float c[8] = { -1.0, 1.5, 1.0, 10.5, 1.0, 1.0, 50.0, 1.0 };
 		__declspec(align(16)) double d[8] = { -1.0, 1.05, 1.0, -1.252525, 1.0, 1.0, -40.3, 3.125 };
 		__declspec(align(16)) double f[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
@@ -59,49 +59,50 @@ int main()
 				getline(cin, input);
 			}
 		}
-		__asm
-		{
-			xor ecx, ecx
-			main_loop:
+		bool flag = false;
+		for (int i = 0; i < 8; i++) {
+			if (isinf(a[i]) || isnan(a[i]) || isinf(b[i]) || isnan(b[i]) ||
+				isinf(c[i]) || isnan(c[i]) || isinf(d[i]) || isnan(d[i]))
+				flag = true;
+		}
+		if (!flag) {
+			__asm
+			{
+				xor ecx, ecx
+				main_loop :
 				movlps xmm0, a[TYPE a * ecx]		//xmm0 = a[ecx, ecx+1]
-				cvtps2pd xmm0, xmm0					//xmm0 = double()
-				movlps xmm1, b[TYPE b * ecx]		//xmm1 = b[ecx, ecx+1]
-				cvtps2pd xmm1, xmm1					//xmm1 = double()
-				addpd xmm0, xmm1					//xmm0 = a+b[ecx, ecx+1]
-				movlps xmm1, c[TYPE c * ecx]		//xmm1 = c[ecx, ecx+1]
-				cvtps2pd xmm1, xmm1					//xmm1 = double()
-				mulpd xmm0, xmm1					//xmm0 = (a+b) * c [ecx, ecx + 1]
-				movups xmm1, d[TYPE d * ecx]		//xmm1 = d[ecx, ecx+1]
-				mulpd xmm0, xmm1					//xmm0 = (a+b)*c*d[ecx, ecx+1]
-				stmxcsr status
-				test status, 1000b
-				jnz oflow
-				test status, 10000b
-				jnz uflow
-				movaps f[TYPE f * ecx], xmm0
-				cmp ecx, 6
-				jae finish
-				add ecx, 2
-				jmp main_loop
-			oflow:
-				mov overflow, 1
-				jmp finish
-			uflow:
-				mov underflow, 1
-			finish:
-		}
-		if (overflow) {
-			cout << "Overflow detected: input values are too big." << endl;
-		}
-		else if (underflow) {
-			cout << "Underflow detected: input values are too small." << endl;;
-		}
-		else {
-			cout << "The resut is:" << endl;
+					cvtps2pd xmm0, xmm0					//xmm0 = double()
+					movlps xmm1, b[TYPE b * ecx]		//xmm1 = b[ecx, ecx+1]
+					cvtps2pd xmm1, xmm1					//xmm1 = double()
+					addpd xmm0, xmm1					//xmm0 = a+b[ecx, ecx+1]
+					movlps xmm1, c[TYPE c * ecx]		//xmm1 = c[ecx, ecx+1]
+					cvtps2pd xmm1, xmm1					//xmm1 = double()
+					mulpd xmm0, xmm1					//xmm0 = (a+b) * c [ecx, ecx + 1]
+					movups xmm1, d[TYPE d * ecx]		//xmm1 = d[ecx, ecx+1]
+					mulpd xmm0, xmm1					//xmm0 = (a+b)*c*d[ecx, ecx+1]
+					movaps f[TYPE f * ecx], xmm0
+					cmp ecx, 6
+					jae finish
+					add ecx, 2
+					jmp main_loop
+					finish :
+			}
+			bool flag = false;
 			for (int i = 0; i < 8; i++) {
-				cout << f[i] << ' ';
+				if (isnan(f[i]) || isinf(f[i])) {
+					cout << "Overflow or underflow detected!" << endl;
+					flag = true;
+				}
+			}
+			if (!flag) {
+				cout << "The resut is:" << endl;
+				for (int i = 0; i < 8; i++) {
+					cout << f[i] << ' ';
+				}
 			}
 		}
+		if (flag)
+			cout << "Overflow or underflow detected!" << endl;
 		cout << endl;
 		cout << "Do you want to retry? Y/n" << endl;
 		cin.ignore();
